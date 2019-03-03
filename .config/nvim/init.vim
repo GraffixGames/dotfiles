@@ -4,13 +4,17 @@ set nocompatible
 
 call plug#begin('~/.local/share/nvim/plugged')
 
-Plug 'scrooloose/nerdtree'
+Plug 'junegunn/fzf', { 'dir': '~/.fzf', 'do': './install --all' }
+Plug 'junegunn/fzf.vim'
 Plug 'tpope/vim-surround'
 Plug 'tpope/vim-commentary'
 Plug 'morhetz/gruvbox'
 Plug 'itchyny/lightline.vim'
+
 Plug 'rust-lang/rust.vim'
+Plug 'dag/vim-fish'
 Plug 'tikhomirov/vim-glsl'
+
 Plug 'Shougo/deoplete.nvim', { 'do': ':UpdateRemotePlugins' }
 Plug 'sebastianmarkow/deoplete-rust'
 Plug 'autozimu/LanguageClient-neovim', {
@@ -20,29 +24,8 @@ Plug 'autozimu/LanguageClient-neovim', {
 
 call plug#end()
 
-set hidden " Keep buffers in the background
-
-let g:lightline = {
-  \ 'colorscheme': 'gruvbox',
-  \ }
-
-" LSP
-let g:LanguageClient_serverCommands = {
-  \ 'rust': ['~/.cargo/bin/rustup', 'run', 'stable', 'rls'],
-  \ }
-
-nnoremap <silent> K :call LanguageClient#textDocument_hover()<CR>
-nnoremap <silent> gd :call LanguageClient#textDocument_definition()<CR>
-nnoremap <silent> <F2> :call LanguageClient#textDocument_rename()<CR>
-
-" auto complete
-autocmd FileType rust
-\ call deoplete#custom#buffer_option('auto_complete', v:true)
-let g:deoplete#enable_at_startup=1
-call deoplete#custom#option('auto_complete', v:false)
-let g:deoplete#sources#rust#racer_binary='which racer'
-let g:deoplete#sources#rust#rust_source_path=$RUST_SRC_PATH.'/'
-let g:deoplete#sources#rust#disable_keymap=1
+filetype plugin indent on
+syntax on
 
 let g:gruvbox_italic=1
 color gruvbox
@@ -60,9 +43,9 @@ set termguicolors
 " General options:
 set splitright
 set splitbelow
+set hidden " Keep buffers in the background
 set noshowmode " Mode showed in lightline
 set wildmenu
-set tabstop=4
 set encoding=utf-8
 set fileencoding=utf-8
 set number
@@ -73,17 +56,29 @@ set listchars=tab:▸\ ,eol:¬
 set listchars +=space:·
 set belloff=all " No annoying error sounds
 " Indent options:
+set smarttab
+set autoindent
 set tabstop=4
 set softtabstop=0
 set shiftwidth=4
 set expandtab
-set smarttab
 
+" Custom commands
 let mapleader=","
-nnoremap <leader>nt :NERDTreeToggle ./<CR>
 
 " neovim integrated terminal options
-tnoremap <Esc> <C-\><C-n>
+" needed for fzf to be able to close split on <Esc>
+" I'm sure there is a better way to do this, but it works
+function TerminalMapQuit()
+    if b:term_title!~"#FZF"
+        tnoremap <buffer> <Esc> <C-\><C-n>
+    endif
+endfunction
+augroup terminal_mapping
+    autocmd!
+    autocmd TermOpen * call TerminalMapQuit()
+augroup end
+
 " move between windows
 nnoremap <leader>wh <C-W>h
 nnoremap <leader>wl <C-W>l
@@ -92,22 +87,67 @@ nnoremap <leader>wk <C-W>k
 " open a new split
 nnoremap <leader>ws :vsplit<CR>
 nnoremap <leader>wi :split<CR>
-" move window to new tab
-nnoremap <leader>wt <C-W><S-t>
 " clear search
 nnoremap <leader>/ :let @/=""<CR>
 
 " buffer stuff:
 " normal mode:
 " (b)uffer (e)xplorer
-nnoremap <leader>be :ls<CR>:b<Space>
+nnoremap <leader>be :Buffers<CR>
 " (b)uffer (p)revious
 nnoremap <leader>bp :b#<CR>
 " (b)uffer (t)erminal
-" only works if a terminal as already open
+" works iff one terminal is open
 nnoremap <leader>bt :b term<CR>
+
+" FZF stuff:
+nnoremap <leader>ff :GFiles<CR>
+nnoremap <leader>faf :Files<CR>
+nnoremap <leader>fr :Rg<CR>
 
 nnoremap Q @q
 
 nnoremap <silent> <S-CR> :pu! _<CR>:']+1<CR>
 nnoremap <silent> <CR> :pu _<CR>:'[-1<CR>
+
+let g:lightline = {
+  \ 'colorscheme': 'gruvbox',
+  \ }
+
+" LSP
+let g:LanguageClient_serverCommands = {
+  \ 'rust': ['~/.cargo/bin/rustup', 'run', 'stable', 'rls'],
+  \ }
+
+" from fzf help page
+let g:fzf_colors =
+  \ { 'fg':      ['fg', 'Normal'],
+    \ 'bg':      ['bg', 'Normal'],
+    \ 'hl':      ['fg', 'Comment'],
+    \ 'fg+':     ['fg', 'CursorLine', 'CursorColumn', 'Normal'],
+    \ 'bg+':     ['bg', 'CursorLine', 'CursorColumn'],
+    \ 'hl+':     ['fg', 'Statement'],
+    \ 'info':    ['fg', 'PreProc'],
+    \ 'border':  ['fg', 'Ignore'],
+    \ 'prompt':  ['fg', 'Conditional'],
+    \ 'pointer': ['fg', 'Exception'],
+    \ 'marker':  ['fg', 'Keyword'],
+    \ 'spinner': ['fg', 'Label'],
+    \ 'header':  ['fg', 'Comment'] }
+
+nnoremap <silent> K :call LanguageClient#textDocument_hover()<CR>
+nnoremap <silent> gd :call LanguageClient#textDocument_definition()<CR>
+nnoremap <silent> <F2> :call LanguageClient#textDocument_rename()<CR>
+
+" auto complete
+augroup filetype_rust
+    autocmd!
+    autocmd FileType rust
+    \ call deoplete#custom#buffer_option('auto_complete', v:true)
+augroup end
+
+let g:deoplete#enable_at_startup=1
+call deoplete#custom#option('auto_complete', v:false)
+let g:deoplete#sources#rust#racer_binary='which racer'
+let g:deoplete#sources#rust#rust_source_path=$RUST_SRC_PATH.'/'
+let g:deoplete#sources#rust#disable_keymap=1
