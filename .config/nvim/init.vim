@@ -74,10 +74,13 @@ function TerminalMapQuit()
         tnoremap <buffer> <Esc> <C-\><C-n>
     endif
 endfunction
+
 augroup terminal_mapping
     autocmd!
     autocmd TermOpen * call TerminalMapQuit()
 augroup end
+
+tnoremap <C-\><Esc> <Esc>
 
 " move between windows
 nnoremap <leader>wh <C-W>h
@@ -101,9 +104,17 @@ nnoremap <leader>bp :b#<CR>
 nnoremap <leader>bt :b term<CR>
 
 " FZF stuff:
-nnoremap <leader>ff :GFiles<CR>
+function FindFilesFZF()
+    if system("git rev-parse --is-inside-work-tree") =~ "true"
+        :GFiles
+    else
+        :Files
+    endif
+endfunction
+
+nnoremap <leader>ff :call FindFilesFZF()<CR>
 nnoremap <leader>faf :Files<CR>
-nnoremap <leader>fr :Rg<CR>
+nnoremap <leader>fg :Rg<CR>
 
 nnoremap Q @q
 
