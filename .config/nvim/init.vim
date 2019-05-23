@@ -8,34 +8,36 @@ Plug 'junegunn/fzf', { 'dir': '~/.fzf', 'do': './install --all' }
 Plug 'junegunn/fzf.vim'
 Plug 'tpope/vim-surround'
 Plug 'tpope/vim-commentary'
+
 Plug 'morhetz/gruvbox'
 Plug 'itchyny/lightline.vim'
 
+" language specific
 Plug 'rust-lang/rust.vim'
 Plug 'dag/vim-fish'
 Plug 'tikhomirov/vim-glsl'
+Plug 'cespare/vim-toml'
+Plug 'gluon-lang/vim-gluon'
 
 Plug 'Shougo/deoplete.nvim', { 'do': ':UpdateRemotePlugins' }
 Plug 'sebastianmarkow/deoplete-rust'
-Plug 'autozimu/LanguageClient-neovim', {
-  \ 'branch': 'next',
-  \ 'do': 'bash install.sh',
-  \ }
+Plug 'autozimu/LanguageClient-neovim', { 'branch': 'next', 'do': 'bash install.sh' }
 
 call plug#end()
 
 filetype plugin indent on
 syntax on
 
+
 let g:gruvbox_italic=1
+let g:gruvbox_contrast_dark='meduim'
+let g:gruvbox_contrast_light='soft'
 color gruvbox
 
 " GUI options:
 set guifont='Fira\ Code:h10'
 set guioptions-=m " removes the menu bar
 set guioptions-=T " removes the toolbar
-set guioptions-=r " removes the right hand scroll bar
-set guioptions-=L " removes the left hand scroll bar
 
 " TUI options:
 set termguicolors
@@ -55,6 +57,9 @@ set list " Show Space, Tab, and EOL
 set listchars=tab:▸\ ,eol:¬
 set listchars +=space:·
 set belloff=all " No annoying error sounds
+set undofile
+set undodir=~/.config/nvim/undodir
+set completeopt=menu
 " Indent options:
 set smarttab
 set autoindent
@@ -67,7 +72,7 @@ set expandtab
 let mapleader=","
 
 " neovim integrated terminal options
-" needed for fzf to be able to close split on <Esc>
+" needed for fzf to be able to close window on <Esc>
 " I'm sure there is a better way to do this, but it works
 function TerminalMapQuit()
     if b:term_title!~"#FZF"
@@ -82,26 +87,28 @@ augroup end
 
 tnoremap <C-\><Esc> <Esc>
 
+inoremap jj <C-[>
+
 " move between windows
 nnoremap <leader>wh <C-W>h
 nnoremap <leader>wl <C-W>l
 nnoremap <leader>wj <C-W>j
 nnoremap <leader>wk <C-W>k
 " open a new split
-nnoremap <leader>ws :vsplit<CR>
-nnoremap <leader>wi :split<CR>
+nnoremap <leader>wv :vsplit<CR>
+nnoremap <leader>ws :split<CR>
 " clear search
-nnoremap <leader>/ :let @/=""<CR>
+nnoremap <silent> <leader>/ :let @/=""<CR>
 
 " buffer stuff:
 " normal mode:
 " (b)uffer (e)xplorer
 nnoremap <leader>be :Buffers<CR>
 " (b)uffer (p)revious
-nnoremap <leader>bp :b#<CR>
+nnoremap <silent> <leader>bp :b#<CR>
 " (b)uffer (t)erminal
 " works iff one terminal is open
-nnoremap <leader>bt :b term<CR>
+nnoremap <silent> <leader>bt :b term://<CR>
 
 " FZF stuff:
 function FindFilesFZF()
@@ -127,7 +134,8 @@ let g:lightline = {
 
 " LSP
 let g:LanguageClient_serverCommands = {
-  \ 'rust': ['~/.cargo/bin/rustup', 'run', 'stable', 'rls'],
+  \ 'rust': ['rls'],
+  \ 'gluon': ['gluon_language-server']
   \ }
 
 " from fzf help page
@@ -149,11 +157,18 @@ let g:fzf_colors =
 nnoremap <silent> K :call LanguageClient#textDocument_hover()<CR>
 nnoremap <silent> gd :call LanguageClient#textDocument_definition()<CR>
 nnoremap <silent> <F2> :call LanguageClient#textDocument_rename()<CR>
+nnoremap <silent> <F5> :call LanguageClient_contextMenu()<CR>
 
 " auto complete
 augroup filetype_rust
     autocmd!
     autocmd FileType rust
+    \ call deoplete#custom#buffer_option('auto_complete', v:true)
+augroup end
+
+augroup filetype_gluon
+    autocmd!
+    autocmd FileType gluon
     \ call deoplete#custom#buffer_option('auto_complete', v:true)
 augroup end
 
