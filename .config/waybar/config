@@ -19,10 +19,14 @@
         "format-disconnected": "",
         "tooltip-format": "{ifname}",
         "tooltip-format-wifi": "{essid} ({signalStrength}%)"
-     },
+    },
     "sway/window": {
         "max-length": 50,
         "tooltip": false
+    },
+    "sway/workspaces": {
+        "disable-scroll": true,
+        "disable-bar-scroll": true
     },
     "battery": {
         "format": "{capacity}%",

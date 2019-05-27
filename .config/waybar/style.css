@@ -1,6 +1,7 @@
 /*
  * header-color-green: #6ff6aa;
  * header-color-red: #ff6969;
+ * header-color-orange: $ff9669;
  * header-color-gray: #5c6c7c;
  * header-color-purple: #cc66ff;
  */
@@ -23,19 +24,24 @@ window#waybar {
     background-color: #cc66ff;
 }
 
+window#waybar.empty #window {
+    background: transparent;
+}
+
+#workspaces {
+    background: #5c6c7c;
+}
+
 #workspaces button {
-    padding: 0 5px;
     background: transparent;
     color: white;
-    border-bottom: 3px solid transparent;
 }
 
 #workspaces button.focused {
-    background: #64727D;
-    border-bottom: 3px solid white;
+    color: #6ff6aa;
 }
 
-#window, #mpd, #network, #mode, #clock, #battery {
+#workspaces, #window, #mpd, #network, #mode, #clock, #battery {
     padding: 0 8px;
     margin: 4px 4px;
     border-radius: 2em;
@@ -56,8 +62,8 @@ window#waybar {
 }
 
 #mode {
-    background: #64727D;
-    border-bottom: 3px solid white;
+    color: black;
+    background: #6ff6aa;
 }
 
 #clock {
@@ -70,11 +76,15 @@ window#waybar {
 }
 
 #battery.charging {
-    color: white;
-    background-color: #f3f666;
+    color: black;
+    background-color: #3a3aee;
 }
 
-#battery.critical {
+#battery.warning:not(.charging) {
+    background-color: #ff9669;
+}
+
+#battery.critical:not(.charging) {
     color: white;
     background-color: #ff6969;
 }
@@ -86,7 +96,7 @@ window#waybar {
     }
 }
 
-#battery.warning:not(.charging) {
+#battery.critical:not(.charging) {
     background: #f53c3c;
     color: white;
     animation-name: blink;

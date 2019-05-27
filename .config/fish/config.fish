@@ -3,3 +3,4 @@ if test -z "$RUST_SRC_PATH"
 end
 
 alias :q exit
+alias e "$EDITOR"

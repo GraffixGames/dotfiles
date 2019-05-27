@@ -20,10 +20,10 @@ set $term alacritty
 
 set $menu j4-dmenu-desktop --dmenu='bemenu -i -b --fn "pango:Fira Sans 10"' --no-generic --term=$term
 
-set $lockimg '/home/noah/Pictures/Wallpapers/VaporWAVE.png'
-set $lockcmd 'swaylock -f -i $lockimg'
+set $bgimg {{{ wallpaper-path }}}
 
-set $bgimg '/home/noah/Pictures/Wallpapers/alena-aenami-sunset-over-the-city.png'
+set $lockimg $bgimg
+set $lockcmd 'swaylock -f -i $lockimg'
 
 set $color_focused #ffafbc
 set $color_indicator #ffe27e
@@ -76,7 +76,7 @@ bindsym $mod+Return exec $term
 bindsym $mod+Shift+q kill
 bindsym $mod+d exec $menu
 
-bindsym $mod+Shift+c reload
+bindsym $mod+Shift+c exec '/home/noah/.config/sway/config-setup.py' ; reload
 bindsym $mod+Shift+e exec swaynag -t warning -m 'Exit sway?' -b 'Yes' 'swaymsg exit'
 
 bindsym $mod+$left focus left
@@ -130,6 +130,11 @@ mode "resize" {
     bindsym $up resize shrink height 10px
     bindsym $down resize grow height 10px
 
+    bindsym Shift+$left resize shrink width 2px
+    bindsym Shift+$right resize grow width 2px
+    bindsym Shift+$up resize shrink height 2px
+    bindsym Shift+$down resize grow height 2px
+
     bindsym Return mode "default"
     bindsym Escape mode "default"
 }
@@ -151,9 +156,8 @@ client.focused $color_focused $color_focused $color_text_focused $color_indicato
 client.unfocused $color_unfocused $color_unfocused $color_text_unfocused $color_indicator $color_unfocused
 client.urgent $color_urgent $color_urgent $color_text_focused $color_indicator $color_urgent
 
-gaps left 5
-gaps right 5
-gaps bottom 5
+gaps inner 3
+gaps outer 2
 smart_gaps on
 smart_borders no_gaps
 
