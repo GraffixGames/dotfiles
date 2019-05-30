@@ -1,0 +1,44 @@
+source "%val{config}/plugins/plug.kak/rc/plug.kak"
+plug "andreyorst/plug.kak" noload
+plug "andreyorst/smarttab.kak"
+plug "occivink/kakoune-snippets" config %{
+    unmap global insert '<c-i>'
+    map global insert '<c-i>' '<a-;>: snippets-select-next-placeholder<ret>'
+    set-option global snippets_auto_expand true
+}
+
+plug "andreyorst/fzf.kak" config %{
+    map global normal '<c-p>' ': fzf-mode<ret>'
+}
+
+colorscheme gruvbox
+set-option global tabstop 4
+
+eval %sh{kak-lsp --kakoune -s $kak_session}
+hook global WinSetOption filetype=(rust|c) %{ lsp-enable-window }
+
+hook global WinCreate ^[^*]+$ %{
+    add-highlighter window/ number-lines -relative
+    add-highlighter window/ show-whitespaces
+    add-highlighter window/ show-matching
+}
+
+hook global WinSetOption filetype=rust %{
+    expandtab
+    set-option buffer softtabstop 4
+    set-option window formatcmd 'rustfmt'
+}
+
+hook global WinSetOption filetype=python %{
+    expandtab
+    set-option buffer softtabstop 4
+}
+
+hook global WinSetOption filetype=haskell %{
+    expandtab
+    set-option window softtabstop 4
+}
+
+hook global WinSetOption filetype=latex %{
+    hook window BufWritePost %val{buffile} %{ nop %sh{ pdflatex '$kak_buffile' } & }
+}

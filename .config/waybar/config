@@ -1,18 +1,8 @@
 {
     "layer": "top",
-    "modules-left": ["sway/workspaces", "sway/mode", "mpd"],
+    "modules-left": ["sway/workspaces", "sway/mode", "custom/spotify"],
     "modules-center": ["sway/window"],
     "modules-right": ["network", "battery", "clock"],
-    "mpd": {
-        "tooltip": false,
-        "format": "{stateIcon} {title} - {artist} | {elapsedTime:%M:%S}/{totalTime:%M:%S}",
-        "format-stopped": "",
-        "format-disconnected": "",
-        "state-icons": {
-            "playing": "",
-            "paused": ""
-        }
-    },
     "network": {
         "format": "{ifname}",
         "format-wifi": "{essid} ({signalStrength}%)",
@@ -37,5 +27,12 @@
     },
     "clock": {
         "format-alt": "{:%a, %d. %b  %H:%M}"
+    },
+    "custom/spotify": {
+        "interval": 1,
+        "return-type": "json",
+        "exec": "~/.config/waybar/modules/spotify.sh",
+        "exec-if": "pgrep spotify",
+        "escape": true
     }
 }

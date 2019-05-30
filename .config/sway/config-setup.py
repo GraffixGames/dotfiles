@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
-
 import os, random, re
 
+# can`t figure out how to use env when running on boot, please help
 home_path = '/home/noah'
 random.seed()
 

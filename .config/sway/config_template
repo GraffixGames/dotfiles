@@ -32,6 +32,8 @@ set $color_text_unfocused #888888
 set $color_text_focused #ffffff
 set $color_urgent #ff7376
 
+exec --no-startup-id python3 /home/noah/.config/sway/inactive-windows.py
+
 exec swayidle -w \
     timeout 180 $lockcmd \
     timeout 120 'swaymsg "output * dpms off"' \
@@ -65,6 +67,8 @@ input 1739:52552:SYNA1D31:00_06CB:CD48_Touchpad {
 input 1133:45082:MX_Anywhere_2S_Mouse {
     accel_profile flat
 }
+
+focus_follows_mouse no
 
 #
 # Key Bindings
@@ -124,6 +128,9 @@ bindsym $mod+space focus mode_toggle
 bindsym $mod+Shift+minus move scratchpad
 bindsym $mod+minus scratchpad show
 
+bindsym XF86MonBrightnessDown exec brightnessctl set 5%-
+bindsym XF86MonBrightnessUp exec brightnessctl set +5%
+
 mode "resize" {
     bindsym $left resize shrink width 10px
     bindsym $right resize grow width 10px
@@ -136,6 +143,7 @@ mode "resize" {
     bindsym Shift+$down resize grow height 2px
 
     bindsym Return mode "default"
+    bindsym $mod+r mode "default"
     bindsym Escape mode "default"
 }
 bindsym $mod+r mode resize
@@ -149,16 +157,14 @@ bar {
     swaybar_command waybar
 }
 
-default_border pixel 3
-default_floating_border pixel 3
+default_border none
+default_floating_border none
 font pango:Open Sans 9
 client.focused $color_focused $color_focused $color_text_focused $color_indicator $color_focused
 client.unfocused $color_unfocused $color_unfocused $color_text_unfocused $color_indicator $color_unfocused
 client.urgent $color_urgent $color_urgent $color_text_focused $color_indicator $color_urgent
 
-gaps inner 3
-gaps outer 2
+gaps inner 4
 smart_gaps on
-smart_borders no_gaps
 
 output * background $bgimg fill
